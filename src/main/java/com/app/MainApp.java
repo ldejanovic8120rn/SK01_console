@@ -5,6 +5,7 @@ import com.storage.Create;
 import com.storage.Delete;
 import com.storage.Operations;
 import com.storage.Storage;
+import com.utils.FileMetadata;
 import com.utils.Privilege;
 
 import java.text.SimpleDateFormat;
@@ -28,6 +29,9 @@ public class MainApp {
 
         Scanner scanner = new Scanner(System.in);
         String command;
+
+        System.out.println("If you need some instructions, please type command help");
+        System.out.println("If you want to quit application, please type command exit");
 
         while (true) {
             command = scanner.nextLine();
@@ -135,17 +139,20 @@ public class MainApp {
 
                 //OPERATIONS
                 if (commArray[0].equals("getfiles") && commArray.length == 2) {
-                    operations.getAllFiles(commArray[1]);
+                    String path = commArray[1].equals("/root") ? "" : commArray[1];
+                    printFiles(operations.getAllFiles(path));
                     continue;
                 }
 
                 if (commArray[0].equals("getdirs") && commArray.length == 2) {
-                    operations.getAllDirectories(commArray[1]);
+                    String path = commArray[1].equals("/root") ? "" : commArray[1];
+                    printFiles(operations.getAllDirectories(path));
                     continue;
                 }
 
                 if (commArray[0].equals("getall") && commArray.length == 2) {
-                    operations.getAllFilesRecursive(commArray[1]);
+                    String path = commArray[1].equals("/root") ? "" : commArray[1];
+                    printFiles(operations.getAllFilesRecursive(path));
                     continue;
                 }
 
@@ -155,32 +162,39 @@ public class MainApp {
                 }
 
                 if (commArray[0].equals("upload") && commArray.length == 3) {
-                    operations.uploadFile(commArray[1], commArray[2]);
+                    String toPath = commArray[2].equals("/root") ? "" : commArray[2];
+                    operations.uploadFile(commArray[1], toPath);
                     continue;
                 }
 
                 if (commArray[0].equals("move") && commArray.length == 3) {
-                    operations.moveFile(commArray[1], commArray[2]);
+                    String toPath = commArray[2].equals("/root") ? "" : commArray[2];
+                    operations.moveFile(commArray[1], toPath);
                     continue;
                 }
 
                 if (commArray[0].equals("getfileswe") && commArray.length == 3) {
-                    operations.getAllFilesWithExtention(operations.getAllFiles(commArray[1]), commArray[2]);
+                    String path = commArray[1].equals("/root") ? "" : commArray[1];
+                    printFiles(operations.getAllFilesWithExtention(operations.getAllFiles(path), commArray[2]));
                     continue;
                 }
 
                 if (commArray[0].equals("sort") && commArray.length == 3) {
-                    operations.getSortedBy(operations.getAllFiles(commArray[1]), commArray[2]);
+                    String path = commArray[1].equals("/root") ? "" : commArray[1];
+                    printFiles(operations.getSortedBy(operations.getAllFiles(path), commArray[2]));
                     continue;
                 }
 
                 if (commArray[0].equals("between") && commArray.length == 4) {
+                    String path = commArray[1].equals("/root") ? "" : commArray[1];
                     SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
                     Date startDate = sdf.parse(commArray[2]);
                     Date endDate = sdf.parse(commArray[3]);
-                    operations.getInBetweenDates(operations.getAllFiles(commArray[1]), startDate, endDate);
+                    printFiles(operations.getInBetweenDates(operations.getAllFiles(path), startDate, endDate));
+                    continue;
                 }
 
+                System.out.println("Incorrect command, for more information use command help");
 
             } catch (Exception exception) {
                 System.out.println(exception.getMessage());
@@ -222,5 +236,11 @@ public class MainApp {
         System.out.println("    Get All Files With Extention - getfileswe path e");
         System.out.println("    Get Sort By - sort path criteria -> sortByName, sortByDate, sortByModification and combinations ex. sortByName-sortByDate");
         System.out.println("    Get Files In Between Dates - between path start end");
+    }
+
+    private static void printFiles(List<FileMetadata> metadataList) {
+        for (FileMetadata metadata: metadataList) {
+            System.out.println(metadata);
+        }
     }
 }
