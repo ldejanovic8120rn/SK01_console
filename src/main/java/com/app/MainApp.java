@@ -5,8 +5,10 @@ import com.storage.Create;
 import com.storage.Delete;
 import com.storage.Operations;
 import com.storage.Storage;
+import com.utils.Privilege;
 
-import java.util.Scanner;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class MainApp {
 
@@ -38,6 +40,151 @@ public class MainApp {
                 continue;
             }
 
+            String[] commArray = command.split(" ");
+            try {
+
+                //STORAGE
+                if (commArray[0].equals("createstorage") && commArray.length == 5) {
+                    storage.createStorage(commArray[1], commArray[2], commArray[3], commArray[4]);
+                    continue;
+                }
+
+                if (commArray[0].equals("config") && commArray.length >= 3 && commArray.length <= 7) {
+                    String maxSize = null;
+                    String maxNOF = null;
+                    List<String> unsupportedExtension = null;
+                    for (int i = 1; i < commArray.length; i += 2) {
+                        if (commArray[i].equals("-maxsize")) {
+                            maxSize = commArray[i+1];
+                        }
+
+                        if (commArray[i].equals("-maxnof")) {
+                            maxNOF = commArray[i+1];
+                        }
+
+                        if (commArray[i].equals("-une")) {
+                            unsupportedExtension = new ArrayList<>(Arrays.asList(commArray[i + 1].split(",")));
+                        }
+                    }
+
+                    storage.configure(maxSize, maxNOF, unsupportedExtension);
+                    continue;
+                }
+
+                if (commArray[0].equals("adduser") && commArray.length == 4) {
+                    storage.addUser(commArray[1], commArray[2], Privilege.valueOf(commArray[3]));
+                    continue;
+                }
+
+                if (commArray[0].equals("login") && commArray.length == 4) {
+                    storage.logToStorage(commArray[1], commArray[2], commArray[3]);
+                    continue;
+                }
+
+                if (commArray[0].equals("logout")) {
+                    storage.logOut();
+                    continue;
+                }
+
+                //CREATE
+                if (commArray[0].equals("createdir") && commArray.length == 2) {
+                    create.createDirectory(commArray[1]);
+                    continue;
+                }
+
+                if (commArray[0].equals("createdirs") && commArray.length == 2) {
+                    create.createDirectories(Arrays.asList(commArray[1].split(",")));
+                    continue;
+                }
+
+                if (commArray[0].equals("createfile") && commArray.length == 2) {
+                    create.createFile(commArray[1]);
+                    continue;
+                }
+
+                if (commArray[0].equals("createfiles") && commArray.length == 2) {
+                    create.createFiles(Arrays.asList(commArray[1].split(",")));
+                    continue;
+                }
+
+                //DELETE
+                if (commArray[0].equals("deletedir") && commArray.length == 2) {
+                    delete.removeDirectory(commArray[1]);
+                    continue;
+                }
+
+                if (commArray[0].equals("deletedirs") && commArray.length == 2) {
+                    delete.removeDirectories(Arrays.asList(commArray[1].split(",")));
+                    continue;
+                }
+
+                if (commArray[0].equals("deletefile") && commArray.length == 2) {
+                    delete.removeFile(commArray[1]);
+                    continue;
+                }
+
+                if (commArray[0].equals("deletefiles") && commArray.length == 2) {
+                    delete.removeFiles(Arrays.asList(commArray[1].split(",")));
+                    continue;
+                }
+
+                if (commArray[0].equals("clearstorage")) {
+                    delete.removeAll();
+                    continue;
+                }
+
+                //OPERATIONS
+                if (commArray[0].equals("getfiles") && commArray.length == 2) {
+                    operations.getAllFiles(commArray[1]);
+                    continue;
+                }
+
+                if (commArray[0].equals("getdirs") && commArray.length == 2) {
+                    operations.getAllDirectories(commArray[1]);
+                    continue;
+                }
+
+                if (commArray[0].equals("getall") && commArray.length == 2) {
+                    operations.getAllFilesRecursive(commArray[1]);
+                    continue;
+                }
+
+                if (commArray[0].equals("download") && commArray.length == 2) {
+                    operations.download(commArray[1]);
+                    continue;
+                }
+
+                if (commArray[0].equals("upload") && commArray.length == 3) {
+                    operations.uploadFile(commArray[1], commArray[2]);
+                    continue;
+                }
+
+                if (commArray[0].equals("move") && commArray.length == 3) {
+                    operations.moveFile(commArray[1], commArray[2]);
+                    continue;
+                }
+
+                if (commArray[0].equals("getfileswe") && commArray.length == 3) {
+                    operations.getAllFilesWithExtention(operations.getAllFiles(commArray[1]), commArray[2]);
+                    continue;
+                }
+
+                if (commArray[0].equals("sort") && commArray.length == 3) {
+                    operations.getSortedBy(operations.getAllFiles(commArray[1]), commArray[2]);
+                    continue;
+                }
+
+                if (commArray[0].equals("between") && commArray.length == 4) {
+                    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                    Date startDate = sdf.parse(commArray[2]);
+                    Date endDate = sdf.parse(commArray[3]);
+                    operations.getInBetweenDates(operations.getAllFiles(commArray[1]), startDate, endDate);
+                }
+
+
+            } catch (Exception exception) {
+                System.out.println(exception.getMessage());
+            }
         }
     }
 
