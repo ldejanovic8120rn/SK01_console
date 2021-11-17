@@ -17,7 +17,7 @@ public class MainApp {
 
         // com.localimpl.Local && com.driveimpl.GoogleDrive
         try {
-            Class.forName("com.localimpl.Local");
+            Class.forName("com.driveimpl.GoogleDrive");
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
